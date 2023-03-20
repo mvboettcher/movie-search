@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { useDispatch, connect } from "react-redux";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -8,6 +9,17 @@ import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Col from "react-bootstrap/Col";
 import { Search } from "react-bootstrap-icons";
+// Actions
+import {
+  setMovieResults,
+  clearMovieResults,
+  clearSelectedMovie,
+  setTotalResultsCount,
+  clearTotalResultsCount,
+  setSearchError,
+  clearSearchError,
+  toggleIsLoading,
+} from "../redux/features/movieSlice";
 
 import { MovieAPI } from "../api/MovieAPI";
 
@@ -17,27 +29,33 @@ const schema = yup
   })
   .required();
 
-const MovieSearchForm = () => {
+const MovieSearchForm = (props) => {
+  const { isLoading } = props;
+
+  const dispatch = useDispatch();
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchResults, setSearchResults] = useState(null);
-  const [totalResults, setTotalResults] = useState(null);
-  const [error, setError] = useState(null);
+  const clearResults = () => {
+    dispatch(clearMovieResults());
+    dispatch(clearTotalResultsCount());
+    dispatch(clearSelectedMovie());
+    dispatch(clearSearchError());
+  };
 
   const onSubmit = (data) => {
-    setIsLoading(true);
+    clearResults();
+    dispatch(toggleIsLoading(true));
     if (data.Error) {
-      setError(data.Error);
-      setIsLoading(false);
+      dispatch(setSearchError(data.Error));
+      dispatch(toggleIsLoading(false));
     }
     MovieAPI.getSeachResults(data.title).then((data) => {
       console.log(data);
-      setSearchResults(data.Search);
-      setTotalResults(data.totalResults);
-      setIsLoading(false);
+      dispatch(setMovieResults(data.Search));
+      dispatch(setTotalResultsCount(data.totalResults));
+      dispatch(toggleIsLoading(false));
     });
   };
 
@@ -77,4 +95,10 @@ const MovieSearchForm = () => {
   );
 };
 
-export default MovieSearchForm;
+const mapStateToProps = (state) => {
+  return {
+    isLoading: state.movie.isLoading,
+  };
+};
+
+export default connect(mapStateToProps)(MovieSearchForm);
