@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -31,7 +32,8 @@ const schema = yup
 
 const MovieSearchForm = (props) => {
   const { isLoading } = props;
-
+  // Hooks
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm({
     resolver: yupResolver(schema),
@@ -47,15 +49,18 @@ const MovieSearchForm = (props) => {
   const onSubmit = (data) => {
     clearResults();
     dispatch(toggleIsLoading(true));
-    if (data.Error) {
-      dispatch(setSearchError(data.Error));
-      dispatch(toggleIsLoading(false));
-    }
-    MovieAPI.getSeachResults(data.title).then((data) => {
-      console.log(data);
-      dispatch(setMovieResults(data.Search));
-      dispatch(setTotalResultsCount(data.totalResults));
-      dispatch(toggleIsLoading(false));
+    MovieAPI.getSearchResults(data.title).then((data) => {
+      if (data.Error) {
+        console.log(data.Error);
+        dispatch(setSearchError(data.Error));
+        dispatch(toggleIsLoading(false));
+      } else {
+        console.log(data);
+        dispatch(setMovieResults(data.Search));
+        dispatch(setTotalResultsCount(data.totalResults));
+        dispatch(toggleIsLoading(false));
+        navigate("movies");
+      }
     });
   };
 
