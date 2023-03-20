@@ -55,7 +55,6 @@ const MovieSearchForm = (props) => {
         dispatch(setSearchError(data.Error));
         dispatch(toggleIsLoading(false));
       } else {
-        console.log(data);
         dispatch(setMovieResults(data.Search));
         dispatch(setTotalResultsCount(data.totalResults));
         dispatch(toggleIsLoading(false));

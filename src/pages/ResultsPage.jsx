@@ -1,28 +1,41 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
+// Bootstrap Components
+import ListGroup from "react-bootstrap/ListGroup";
 
 const ResultsPage = (props) => {
   const { movieResults, totalResultsCount, searchError } = props;
   const navigate = useNavigate();
 
-  const renderMovieResults = () => {
+  useEffect(() => {
+    if (!totalResultsCount) {
+      navigate("/");
+    }
+  }, [totalResultsCount, navigate]);
+
+  const renderMovieListItems = () => {
     return movieResults.map((movie, index) => {
       const { Title, Year, imdbID } = movie;
       return (
-        <div
+        <ListGroup.Item
           key={index}
+          className="text-start"
+          action
           onClick={() => navigate(`${imdbID}`)}
-        >{`${Title} - ${Year} (ID: ${imdbID})`}</div>
+        >
+          <span className="fw-bold">{Title}</span>
+          <span className="fst-italic">{`- ${Year}`}</span>
+        </ListGroup.Item>
       );
     });
   };
 
   if (movieResults) {
     return (
-      <div>
-        <h5>{`${totalResultsCount} Results`}</h5>
-        {renderMovieResults()}
+      <div className="d-flex flex-column align-items-center">
+        <h5 className="mb-5">{`Showing ${movieResults.length} of ${totalResultsCount} results...`}</h5>
+        <ListGroup style={{ width: "50%" }}>{renderMovieListItems()}</ListGroup>
       </div>
     );
   } else if (searchError) {
