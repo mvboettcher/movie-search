@@ -2,6 +2,6 @@
 
 ### To get started...
 
-- create a `.env.local` file in the root of the project
-- Add `REACT_APP_API_KEY` value to it
+- Clone the repo
+- Create a `.env.local` file in the root of the project and add a `REACT_APP_API_KEY` value to it (OMDB API key)
 - Run `yarn start` or `npm run start`
