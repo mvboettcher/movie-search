@@ -23,9 +23,13 @@ const MovieDetailsPage = ({ selectedMovie }) => {
 
   const renderPageContent = () => {
     if (isLoading) {
-      return <h4>Loading...</h4>;
+      return <h3 className="mt-3">Loading...</h3>;
     } else if (error) {
-      return <h4>{error}</h4>;
+      return (
+        <h3 className="mt-3" style={{ color: "red" }}>
+          {error}
+        </h3>
+      );
     } else {
       return <MovieCard movie={details} />;
     }
