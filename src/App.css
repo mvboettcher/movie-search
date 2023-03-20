@@ -6,3 +6,10 @@
   text-align: left;
   padding: 1rem;
 }
+
+.home-btn {
+  cursor: pointer;
+  background-color: #212529;
+  color: #fff;
+  padding: 10px;
+}

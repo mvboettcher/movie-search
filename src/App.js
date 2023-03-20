@@ -1,18 +1,23 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 // Pages
 import MovieSearchPage from "./pages/MovieSearchPage";
 import ResultsPage from "./pages/ResultsPage";
 import MovieDetailsPage from "./pages/MovieDetailsPage";
 
-const renderHeader = () => (
-  <header className="header">
-    <h5>Movie Search!</h5>
-  </header>
-);
-
 const App = () => {
+  const navigate = useNavigate();
+
+  const renderHeader = () => (
+    <div
+      className="p-3 d-flex justify-content-start"
+      onClick={() => navigate("/")}
+    >
+      <h5 className="home-btn">Movie Search!</h5>
+    </div>
+  );
+
   return (
     <div className="App">
       {renderHeader()}

@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-// Bootstrap components
+
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Spinner from "react-bootstrap/Spinner";
 import Col from "react-bootstrap/Col";
 import { Search } from "react-bootstrap-icons";
-// Actions
+
 import {
   setMovieResults,
   clearMovieResults,
@@ -31,7 +31,7 @@ const schema = yup
   .required();
 
 const MovieSearchForm = (props) => {
-  const { isLoading } = props;
+  const { isLoading, searchError } = props;
   // Hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -46,12 +46,9 @@ const MovieSearchForm = (props) => {
     dispatch(clearSearchError());
   };
 
-  const onSubmit = (data) => {
-    clearResults();
-    dispatch(toggleIsLoading(true));
+  const fetchMovies = (data) => {
     MovieAPI.getSearchResults(data.title).then((data) => {
       if (data.Error) {
-        console.log(data.Error);
         dispatch(setSearchError(data.Error));
         dispatch(toggleIsLoading(false));
       } else {
@@ -63,13 +60,22 @@ const MovieSearchForm = (props) => {
     });
   };
 
+  const onSubmit = (data) => {
+    clearResults();
+    dispatch(toggleIsLoading(true));
+    fetchMovies(data);
+  };
+
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+    <>
+      <Form
+        className="d-flex justify-content-center"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Form.Group as={Col} md="4">
           <Form.Control
             type="text"
-            placeholder="Enter a movie title (e.g., Guardians of the Galaxy}"
+            placeholder="Enter a movie title (example: Office Space)"
             {...register("title")}
             required
           />
@@ -94,14 +100,18 @@ const MovieSearchForm = (props) => {
           )}
           {isLoading ? "Loading..." : "Search"}
         </Button>
-      </div>
-    </Form>
+      </Form>
+      <h5 className="mt-3" style={{ color: "red" }}>
+        {searchError}
+      </h5>
+    </>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
     isLoading: state.movie.isLoading,
+    searchError: state.movie.searchError,
   };
 };
 
